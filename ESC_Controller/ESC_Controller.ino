@@ -12,7 +12,7 @@ int baud = 2400; // set data transmission frequency
 //setup analog and digital pins
 int pot = 9; // analog input from potentiometer
 int servo = 10; // pin to connect to ESC orange line
-int onoff = 8; // digital input foor 
+int onoff = 8; // digital input for button 
 
 void setup() 
 { 
@@ -31,38 +31,39 @@ void setup()
   speed_max=1;
 } 
 
-//unsigned int num;
+unsigned int num;
 void loop() 
 {
-  speed_max = analogRead(pot);
-  button = digitalRead(onoff);
-  int speed_act = (speed_max)/6; // adjusting the potentiometer input to servo input range (0 - 180 I believe) with a safety floor (the -100)s
-  Serial.print("Actual Input: ");
-  Serial.println(speed_act);
-  Serial.print("Pot Input: ");
-  Serial.println(speed_max);
-  Serial.print("button: ");
-  Serial.println(button);
-    if (button = 0)
-    {
-      if (speed_act > 90) // set a safety cap so the motor doesn't spin at more than 50%
-      {
-         esc.write(1);
-      }
-      else (speed_act >= 2)
-      {
-           esc.write(speed_act);
-      }
-    else
-    {
-      esc.write(1);
-    }
-//  num = Serial.parseInt();
+//  speed_max = analogRead(pot);
+//  button = digitalRead(onoff);
+//  int speed_act = (speed_max)/6; // adjusting the potentiometer input to servo input range (0 - 180 I believe) with a safety floor (the -100)s
+//  Serial.print("Actual Input: ");
+//  Serial.println(speed_act);
+//  Serial.print("Pot Input: ");
 //  Serial.println(speed_max);
-//  esc.write(speed_max);
-//  if (num != 0)
-//  {
-//    speed_max = num;
-//  }
+//  Serial.print("button: ");
+//  Serial.println(button);
+//    if (button = 0)
+//    {
+//      if (speed_act > 90) // set a safety cap so the motor doesn't spin at more than 50%
+//      {
+//         esc.write(1);
+//      }
+//      else (speed_act >= 2)
+//      {
+//           esc.write(speed_act);
+//      }
+//    else
+//    {
+//      esc.write(1);
+//    }
+// Useful operation -- Debounce --
+  num = Serial.parseInt();
+  Serial.println(speed_max);
+  esc.write(speed_max);
+  if (num != 0)
+  {
+    speed_max = num;
+  }
   delay(1500);
 }
