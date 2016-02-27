@@ -2,11 +2,11 @@
 
 //compiler directives to speed up interrupts and save ram
 //#define EI_NOTEXRERNAL  //uncomment if you are not using external interrupts
-#define EI_NOTINT0 //or this if you are only using int1
+//#define EI_NOTINT0 //or this if you are only using int1
 //#define EI_NOTINT1 //or this if you are only using int0
-#define EI_NOTPINCHANGE //uncomment if you are using pin change interrupts
-#define EI_NOTPORTB // uncomment if no port B interrupts are used
-#define EI_NOTPORTC // same for port C
+//#define EI_NOTPINCHANGE //uncomment if you are using pin change interrupts
+//#define EI_NOTPORTB // uncomment if no port B interrupts are used
+//#define EI_NOTPORTC // same for port C
 //#define EI_NOTPORTD // port D
 
 #define NEEDFORSPEED
@@ -30,6 +30,7 @@ uint16_t motor_current = 0;
 
 //make variable for timing writing to serial port
 uint32_t time_var = 0;
+uint32_t time_car = 0;
 
 Servo esc; //create servo object
 
@@ -52,7 +53,7 @@ void setup() {
   delay(500);
 
   //give person 10 seconds to run away
-  delay(10000);
+  delay(1000);
 
   //datalogger starts when a $ is sent
   Serial.print("$");
@@ -62,15 +63,16 @@ void setup() {
   
   //reset time
   time_var = millis();
+  time_car = millis();
 
   //start motor
-  esc.write(180);
+  esc.write(10);
 }
 
 
 
 void loop() {
-  if(millis() - time_var > 50) //every 50 millis
+  if(millis() - time_var > 100) //every 50 millis
   {
     //record pulse count
     last_pulse_count = pulse_count;
@@ -88,5 +90,9 @@ void loop() {
     Serial.print(motor_current);
     Serial.print(",");
     Serial.println(last_pulse_count);
+  }
+  if (millis() - time_car > 20000)
+  {
+    esc.write(0);
   }
 }
