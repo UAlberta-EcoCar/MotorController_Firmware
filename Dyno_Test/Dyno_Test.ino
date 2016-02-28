@@ -18,7 +18,7 @@
 //define the hall effect sensor pin
 #define hall_pin 3 //int1
 
-//define curent input pin
+//define curr ent input pin
 #define current_pin A0
 
 //define esc pwm pin
@@ -66,7 +66,7 @@ void setup() {
   time_car = millis();
 
   //start motor
-  esc.write(10);
+  esc.write(100);
 }
 
 
