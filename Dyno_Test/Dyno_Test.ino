@@ -66,7 +66,7 @@ void setup() {
   time_car = millis();
 
   //start motor
-  esc.write(100);
+  esc.write(50);
 }
 
 
@@ -79,7 +79,7 @@ void loop() {
 
     //reset pulse count
     pulse_count = 0;
-
+    
     //reset time 
     time_var = millis();
     
@@ -91,8 +91,13 @@ void loop() {
     Serial.print(",");
     Serial.println(last_pulse_count);
   }
-  if (millis() - time_car > 20000)
+  if (millis() - time_car > 40000)
   {
     esc.write(0);
   }
+  if(millis() - time_car > 80000)
+  {
+    while(1);
+  }
 }
+
