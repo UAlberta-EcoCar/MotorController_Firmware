@@ -7,17 +7,21 @@ Servo esc;  // create servo object to control a servo
 //setup position and speed variables
 unsigned int speed_max; // variable to set servo speed
 int button = 0; // emergency on or off variable
-int baud = 2400; // set data transmission frequency
+int baud = 9600; // set data transmission frequency
 
 //setup analog and digital pins
-int pot = 9; // analog input from potentiometer
+int currsens = A0; // analog input from current sensor
+int currValue = 0; //
+int pot = A1; // analog input from potentiometer
+int potValue = 0; // variable to store potentiometer (gas pedal) input
 int servo = 10; // pin to connect to ESC orange line
 int onoff = 8; // digital input for button 
 
 void setup() 
 { 
   pinMode(pot,INPUT);
-  pinMode(onoff, INPUT);
+  pinMode(onoff, INPUT); 
+  pinMode(currsens, INPUT);
   esc.attach(servo);  // attaches the servo on pin 10 to the servo object
   //ESC needs a low high low signal to turn on
   esc.write(0);
@@ -34,6 +38,18 @@ void setup()
 unsigned int num;
 void loop() 
 {
+    //Read pedal input and display
+    potValue = analogRead(pot);
+    Serial.print("Pedal input: ");
+    Serial.print(potValue); 
+
+    //Read current sensor input
+    
+    if (millis() > 20000)
+    {
+    speed_max = 1;
+    }
+    
 //  speed_max = analogRead(pot);
 //  button = digitalRead(onoff);
 //  int speed_act = (speed_max)/6; // adjusting the potentiometer input to servo input range (0 - 180 I believe) with a safety floor (the -100)s
@@ -58,12 +74,18 @@ void loop()
 //      esc.write(1);
 //    }
 // Useful operation -- Debounce --
-  num = Serial.parseInt();
-  Serial.println(speed_max);
-  esc.write(speed_max);
-  if (num != 0)
-  {
-    speed_max = num;
-  }
-  delay(1500);
+  
+//  num = Serial.parseInt(); //Allow user to set speed via Serial Monitor
+  
+//  if (num != 0)
+//  {
+//    speed_max = num;
+//  }
+    speed_max = (potValue/30);
+    Serial.print(" Speed: ");
+    Serial.print(speed_max);
+    Serial.print(" Run Time: ");
+    Serial.println(millis());
+    esc.write(speed_max);
+    delay(100);
 }
