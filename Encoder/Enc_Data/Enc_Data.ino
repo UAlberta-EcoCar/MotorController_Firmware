@@ -1,10 +1,11 @@
+
 #define PIN_A 11
 #define PIN_B 12
 #define PIN_C 13
 
 #define DELAY 100
 
-#include "Timer.h"
+#include "Timer.h"  
 int array = 1000;//Pick size of data array
 
 int d[array];

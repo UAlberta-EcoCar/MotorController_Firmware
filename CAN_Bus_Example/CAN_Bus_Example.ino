@@ -10,15 +10,11 @@ can_msg::MsgEncode throttle_msg( can_msg::UINT16, can_msg::MOTOR, can_msg::THROT
 //Create brake_msg
 can_msg::MsgEncode brake_msg( can_msg::UINT16, can_msg::MOTOR, can_msg::BRAKE, can_msg::CRITICAL, 1 );
 
-unsigned char var = 0;
-#define NL Serial.println();
-#define SPACE Serial.print(" ");
-
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
   while (!Serial);
-
+}
  // Initialize CAN
  Serial.print("Initializing mcp2515 CAN controller... ");
   if (can_init(0,0,0,0,0,0,0,0)){ //filter set to accept throttle and brake msg's
@@ -37,12 +33,12 @@ void setup() {
 void loop() 
 { 
   CanMessage message; //make a new message object
-  if(digitalRead(9) == 0) //If there was a "message received interrupt" (happy mike?)
+  if(digitalRead(9) == 0) //If there was a "message received interrupt"
   {
     message = can_get_message(); //retrieve message
     if(message.id == throttle_msg.id()) //if message is a throttle message (the "&(DEVICE_MASK|MESSAGE..)" makes code only check message and device parts of the ID
     {
-      int throttle = message.data[0] | (message.data[1] << 8); //read data
+      int throttle = message.data[0] | (message.data[1] << 8); //read data - Uses bitwise "or" to add the bytes together (shifts second byte by 8 bits and adds the two bytes together)
       Serial.println(throttle); //display data
     }
     else if((message.id&(DEVICE_MASK|MESSAGE_MASK)) == (brake_msg.id()&(DEVICE_MASK|MESSAGE_MASK))) //if message is a throttle message (the "&(DEVICE_MASK|MESSAGE..)" makes code only check message and device parts of the ID
