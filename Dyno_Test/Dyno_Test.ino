@@ -72,7 +72,7 @@ void setup() {
 
 
 void loop() {
-  if(millis() - time_var > 100) //every 50 millis
+  if(millis() - time_var > 100) //every 100 millis
   {
     //record pulse count
     last_pulse_count = pulse_count;
