@@ -12,6 +12,8 @@ can_msg::MsgEncode throttle_msg( can_msg::UINT16, can_msg::MOTOR, can_msg::THROT
 can_msg::MsgEncode brake_msg( can_msg::UINT16, can_msg::MOTOR, can_msg::BRAKE, can_msg::CRITICAL, 1 );
 //Create speed_msg
 can_msg::MsgEncode speed_msg( can_msg::UINT16, can_msg::MOTOR, can_msg::MSPEED, can_msg::INFORMATION, 1 );
+//Create current_msg
+can_msg::MsgEncode current_msg( can_msg::UINT16, can_msg::MOTOR, can_msg::MCURRENT, can_msg::INFORMATION, 1 );
 
 const int enc1 = 2; //set hall effect 1 signal to arduino pin 2
 const int enc2 = 3; //set hall effect 2 signal to arduino pin 3
@@ -48,7 +50,7 @@ uint32_t velocity = 0; // Set storage variable for total speed in rpm after calc
 uint16_t throttle; // Raw pedal (potentiometer) data
 uint16_t brake; //Raw brake (potentiometer) data
 int throttle_val = 0; // Value between 1-180 that goes into esc.write
-uint16_t curr_sens_voltage = 0; //Set storage variable for mV output of current sensor
+float curr_sens_voltage = 0; //Set storage variable for mV output of current sensor
 float curr_val; //Translates voltage to current
 
 const int BR = 9600; //set Baud Rate - 115200 doesn't work
@@ -117,8 +119,12 @@ void loop() {
     
 ///////////////////////////////////////////////////////////////////////////////////
 
-//   curr_sens_voltage = analogRead(curr_sens); //attain current sensor value
-//   curr_val = curr_sens_voltage * (3.30/1023.0);
+   curr_sens_voltage = analogRead(curr_sens)-303; //attain current sensor value
+   curr_val = curr_sens_voltage/2.71;
+
+   if (curr_val < 1) { //crudely set the current to read zero if nothing is attached
+    curr_val = 0;
+   }
 
 ////////////////////////////////////////////////////////////////////////////////////
       
@@ -136,12 +142,10 @@ void loop() {
       Serial.print("LEDL");
     }
     message = can_get_message(); //retrieve message
-    if(message.id == throttle_msg.id()) //if message is a throttle message (the "&(DEVICE_MASK|MESSAGE..)" makes code only check message and device parts of the ID
-    {
+    if(message.id == throttle_msg.id()) { //if message is a throttle message (the "&(DEVICE_MASK|MESSAGE..)" makes code only check message and device parts of the ID
       throttle = message.data[0] | (message.data[1] << 8); //read data
     }
-    else if((message.id&(DEVICE_MASK|MESSAGE_MASK)) == (brake_msg.id()&(DEVICE_MASK|MESSAGE_MASK))) //if message is a throttle message (the "&(DEVICE_MASK|MESSAGE..)" makes code only check message and device parts of the ID
-    {
+    else if((message.id&(DEVICE_MASK|MESSAGE_MASK)) == (brake_msg.id()&(DEVICE_MASK|MESSAGE_MASK))) { //if message is a throttle message (the "&(DEVICE_MASK|MESSAGE..)" makes code only check message and device parts of the ID
       brake = message.data[0] | (message.data[1] << 8); //read data
       if (brake > 50) {
         esc.write(0);
@@ -149,9 +153,9 @@ void loop() {
     }
   }
 
-  throttle_val = ((throttle - 80)*180)/(744); //denom calc'd by (700-147)*180/highestspeed(ie10)
+  throttle_val = ((throttle - 80)*180)/(744); //denom calc'd by (700-80)*180/highestspeed(ie10)
   esc.write(throttle_val);
-//  Serial.print("throttle: ");
+//  Serial.print("throttle: "); //Use to debug speed calculations
 //  Serial.print(throttle);
 //  Serial.print(" throttle val: ");
 //  Serial.println(throttle_val);
@@ -166,46 +170,55 @@ void loop() {
   //set whether message is a remote transmit request (it's not)
   message_send.RTransR = 0;
   //set 8 data bytes
-  speed_msg.buf(message_send.data, velocity); //16bit unsigned int
-  
+  speed_msg.buf(message_send.data, velocity); //16bit unsigned int  
+  can_send_message(&message_send); // send message
+  //set message id
+  //for example use id for Fuel cell temperature
+  message_send.id = current_msg.id();
+  //set message length
+  message_send.length = current_msg.len();
+  //set whether message is a remote transmit request (it's not)
+  message_send.RTransR = 0;
+  //set 8 data bytes
+  current_msg.buf(message_send.data, curr_val); //16bit unsigned int
   can_send_message(&message_send); // send message
   
-  if (can_send_message(&message_send)) //Prints really fast so I commented it out
-  {
+//  if (can_send_message(&message_send)) //Prints really fast so I commented it out
+//  {
 //    Serial.println("Transmition Error: ");
 //    //something is wrong and/or all transmition buffers are full.
 //  }
 //  else
 //  {
 //    Serial.println("Message sent");
-    }
-}
 //////////////////////////////////////////////////////////////////////////////////////////
   
-//  if (millis() - disp_speed > 1000) { //Set MCU to print information every second
+  if (millis() - disp_speed > 1000) { //Set MCU to print information every second
 
 //        Serial.println(" ");
 //        Serial.print(velocity);
 //        Serial.print(" rpm  ");
-//        Serial.print("  runtime: ");
-//        Serial.print(runtime);
+        Serial.print("  runtime: ");
+        Serial.println(runtime);
 //        Serial.print("  Encoder 1: ");
 //        Serial.print(enc1_val);
-//        Serial.print("  Brake: ");
-//        Serial.print(brake);
-//        Serial.print("  Throttle: ");
-//        Serial.print(throttle);
-//        Serial.print("  Current: ");
-//        Serial.print(curr_val);
+        Serial.print("  Brake: ");
+        Serial.println(brake);
+        Serial.print("  Throttle: ");
+        Serial.println(throttle);
+        Serial.print("  Current: ");
+        Serial.println(curr_val);
+        Serial.print("curr_sens_voltage: ");
+        Serial.println(curr_sens_voltage);
 //        Serial.print("count: ");
 //        Serial.print(enc1_count);
 //        Serial.print("Encoder 2: ");
 //        Serial.println(enc2_Val);
 //        Serial.print("Encoder 3: ");
 //        Serial.println(enc3_Val);
-//        disp_speed = millis();
-//  }
-
+        disp_speed = millis();
+  }
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 //  if (millis() < 20000) { //used to test motor without CAN
