@@ -39,7 +39,7 @@ uint32_t led1_hold = 0; //Hold led value
 uint32_t led2_hold = 0;
 uint32_t led3_hold = 0;
 
-const int servo_pin = 5; //Set servo pin
+const int servo_pin = 6; //Set servo pin
 Servo esc; //Create servo object as declared in servo.h library
 
 uint32_t runtime = 0; //To be attached to millis()
