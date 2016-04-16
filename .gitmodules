@@ -1,3 +1,6 @@
-[submodule "ESC_Controller_V3/ESC/ESC_With_CAN/libraries/CAN-BUS-MESSAGES"]
-	path = ESC_Controller_V3/ESC/ESC_With_CAN/libraries/CAN-BUS-MESSAGES
-	url = http://github.com/UAlberta-EcoCar/CAN-BUS-MESSAGES
+[submodule "ESC Controller/libraries/CAN-BUS-MESSAGES"]
+	path = ESC Controller/libraries/CAN-BUS-MESSAGES
+	url = https://github.com/UAlberta-EcoCar/CAN-BUS-MESSAGES
+[submodule "ESC Controller/libraries/mcp2515_lib"]
+	path = ESC Controller/libraries/mcp2515_lib
+	url = https://github.com/UAlberta-EcoCar/mcp2515_lib
