@@ -1,0 +1,3 @@
+[submodule "ESC_Controller_V3/ESC/ESC_With_CAN/libraries/CAN-BUS-MESSAGES"]
+	path = ESC_Controller_V3/ESC/ESC_With_CAN/libraries/CAN-BUS-MESSAGES
+	url = http://github.com/UAlberta-EcoCar/CAN-BUS-MESSAGES
