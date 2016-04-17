@@ -3,9 +3,9 @@
 #include "hardware.h"
 
  //Create servo object as declared in servo.h library
- Servo motor;
- Esc myEsc;
-
+Servo motor;
+Esc myEsc;
+Can myCan;
 
 int enc1_val = 0; //Start set storage variables for encoder values
 int enc2_Val = 0;
@@ -34,11 +34,19 @@ int throttle_val = 0; // Value between 1-180 that goes into esc.write
 float curr_sens_voltage = 0; //Set storage variable for mV output of current sensor
 float curr_val; //Translates voltage to current
 
-void setup() {
-  myEsc.begin();
+uint32_t speedtimer = 0; // For testing CAN
 
-  Serial.begin(BR);
-  while (!Serial); //holds program up until Serial is working
+void setup() {
+  Serial.begin(BR); // Initialize Serial Output
+  // while (!Serial); //holds program up until Serial is working
+
+  myEsc.begin(); // Initialize Electronic Speed Controller
+
+  myCan.begin(); // Initialize CAN
+
+  myCan.send_mcurrent(false);
+  myCan.send_mspeed(false);
+  myCan.send_pinger(false);
 
   pinMode(enc1, INPUT); //initialise encoder pins
   pinMode(enc2, INPUT);
@@ -48,20 +56,18 @@ void setup() {
   pinMode(led2,OUTPUT);
   pinMode(led3,OUTPUT);
 
-// Initialize CAN
- Serial.print("Initializing mcp2515 CAN controller... ");
-  if (can_init(0,0,0,0,0,0,0,0)){ //filter set to accept throttle and brake msg's
-    Serial.println("mcp2515 config error");
-    while(1); //hang up program
-  }
-  Serial.println("mcp2515 initialization successful");
-
-  // Short delay and then begin communication
-  delay(2000);
-
 }
 
 void loop() {
+  myCan.read(); // Setup to read the CAN Bus every loop
+
+  if (millis() - speedtimer > 500) {
+    myCan.send_mspeed(velocity);
+    Serial.print("Velocity: ");
+    Serial.print(velocity);
+    speedtimer = millis();
+    velocity++;
+  }
 ///////////////////////////////////////////////////////////////////////////////////
 /* current issue - velocity isn't accurate but it appears to be linear so we will try to scale the overall velocity
  * to fit the right km/h */
@@ -86,6 +92,7 @@ void loop() {
       count = 0;
       enc1_count = 0;
       runtime = millis();
+      // myCan.send_mspeed(velocity);
     }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -96,11 +103,12 @@ void loop() {
    if (curr_val < 1) { //crudely set the current to read zero if nothing is attached
     curr_val = 0;
    }
+   myCan.send_mcurrent(curr_val);
 
 ////////////////////////////////////////////////////////////////////////////////////
 
-      CanMessage message; //make a new message object
-  if(digitalRead(9) == 0) //If there was a "message received interrupt" (happy mike?)
+      // CanMessage message; //make a new message object
+  if(digitalRead(CAN_INT) == 0) //If there was a "message received interrupt" (happy mike?)
   {
     if (digitalRead(led1) == 0  &&  (millis() - led1_hold > 1000)) {
       digitalWrite(led1, HIGH);
@@ -124,8 +132,8 @@ void loop() {
     // }
   }
 
-  throttle_val = ((throttle - 80)*180)/(744); //denom calc'd by (700-80)*180/highestspeed(ie10)
-  motor.write(throttle_val);
+  // throttle_val = ((throttle - 80)*180)/(744); //denom calc'd by (700-80)*180/highestspeed(ie10)
+  // motor.write(throttle_val);
 //  Serial.print("throttle: "); //Use to debug speed calculations
 //  Serial.print(throttle);
 //  Serial.print(" throttle val: ");
@@ -189,13 +197,13 @@ void loop() {
 //        Serial.println(enc3_Val);
         disp_speed = millis();
   }
-}
+// }
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-//  if (millis() < 20000) { //used to test motor without CAN
-//    motor.write(20);
-//  }
-//  else {
-//    motor.write(0);
-//  }
-//}
+ if (millis() < 20000) { //used to test motor without CAN
+   motor.write(20);
+ }
+ else {
+   motor.write(0);
+ }
+}
