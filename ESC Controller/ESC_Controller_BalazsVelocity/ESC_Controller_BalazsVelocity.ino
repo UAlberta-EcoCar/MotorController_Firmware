@@ -57,7 +57,7 @@ void loop() {
   }
   
   if (millis() < 20000) {
-    esc.write(6);
+    esc.write(20);
   }
   else {
     esc.write(5);

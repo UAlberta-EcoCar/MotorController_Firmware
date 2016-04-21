@@ -11,8 +11,8 @@
 
 #define NEEDFORSPEED
 #define INTERRUPT_FLAG_PIN3 pulse_count
-
-#include <EnableInterrupt.h>
+//
+//#include <EnableInterrupt.h>
 #include <Servo.h>
 
 //define the hall effect sensor pin
@@ -22,7 +22,7 @@
 #define current_pin A0
 
 //define esc pwm pin
-#define servo_pin 10
+#define servo_pin 5
 
 //make variables for storing data
 uint16_t last_pulse_count = 0;
@@ -40,8 +40,8 @@ void setup() {
   pinMode(hall_pin,INPUT);
 
   pinMode(current_pin,INPUT);
-
-  enableInterruptFast(hall_pin, RISING);
+//
+//  enableInterruptFast(hall_pin, RISING);
 
   esc.attach(servo_pin);
   //ESC needs a low high low signal to turn on
@@ -59,14 +59,14 @@ void setup() {
   Serial.print("$");
 
   //reset pulse count
-  pulse_count = 0;
+//  pulse_count = 0;
   
   //reset time
   time_var = millis();
   time_car = millis();
 
   //start motor
-  esc.write(50);
+  esc.write(20);
 }
 
 
@@ -75,10 +75,10 @@ void loop() {
   if(millis() - time_var > 100) //every 100 millis
   {
     //record pulse count
-    last_pulse_count = pulse_count;
+//    last_pulse_count = pulse_count;
 
     //reset pulse count
-    pulse_count = 0;
+//    pulse_count = 0;
     
     //reset time 
     time_var = millis();
@@ -91,7 +91,7 @@ void loop() {
     Serial.print(",");
     Serial.println(last_pulse_count);
   }
-  if (millis() - time_car > 40000)
+  if (millis() - time_car > 20000)
   {
     esc.write(0);
   }
