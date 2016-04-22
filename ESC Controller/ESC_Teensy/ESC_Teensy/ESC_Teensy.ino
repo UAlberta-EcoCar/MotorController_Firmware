@@ -1,13 +1,16 @@
-#include "esc_can.h"
+// #include "esc_can.h"
 #include "esc.h"
 #include "sensors.h"
 #include "hardware.h"
+#include <FlexCAN.h>
+
 
 //Create objects for classes
 Servo motor;
-Can myCan;
 Sensors mySensors;
 Esc myEsc;
+FlexCAN CANbus(125000);
+//static CAN_message_t curr_val;
 
 uint16_t curr_val = 0; // Translates voltage to current
 uint16_t velocity; // Translates encoder values to speed
@@ -31,9 +34,11 @@ void setup() {
   // while (!Serial); //holds program up until Serial is working
   myEsc.begin(); // ONE
 
+  CANbus.begin();
+
   // myCan.begin(); // Initialize CAN - Currently does nothing, talk to Reagan
 
-  pinMode(CAN_INT, INPUT); // Initialize CAN pin
+  // pinMode(CAN_INT, INPUT); // Initialize CAN pin
   pinMode(enc1, INPUT); // Initialize Encoder pins
   // pinMode(enc2, INPUT);
   // pinMode(enc3, INPUT); // End Encoder pin initialization
@@ -43,14 +48,14 @@ void setup() {
 
 void loop() {
 /////////////////Check CAN////////////////////////
-      myCan.read(); //TWO
+  // myCan.read(); //TWO
 
-   if(digitalRead(CAN_INT) == 0) //If there was a "message received interrupt"
-   {
-     digitalWrite(led1, !digitalRead(led1));
-     Serial.print("Read something");
-     Serial.println(millis());
-   }
+  //  if(digitalRead(CAN_INT) == 0) //If there was a "message received interrupt"
+  //  {
+  //    digitalWrite(led1, !digitalRead(led1));
+  //    Serial.print("Read something");
+  //    Serial.println(millis());
+  //  }
 //////////////Throttle and Brake//////////////
   // if (myCan.throttle_available()) {
   //   throttle = myCan.throttle();
@@ -76,11 +81,27 @@ void loop() {
   // myEsc.test(test_speed); //Function used when testing motor without throttle values
 
 /////////////////Current//////////////////////
-  //  curr_val = mySensors.mcurrent(curr_sens_pin); // Attain current value
-  //  Serial.print("Current Value: ");
-  //  Serial.println(curr_val);
+
+   curr_val = mySensors.mcurrent(curr_sens_pin); // Attain current value
+   CAN_message_t msg;
+   msg.message = curr_val;
+   msg.len = 8;
+   msg.id = 0x222;
+   for( int idx=0; idx<8; ++idx ) {
+    msg.buf[idx] = '0'+idx;
+  }
+   Serial.print("Current Value: ");
+   Serial.println(curr_val);
+
+   int txCount = 6;
+   Serial.println(".");
+   while ( txCount-- ) {
+     CANbus.write(msg);
+     msg.buf[0]++;
+   }
   //
   //  myCan.send_mcurrent(curr_val); // Send current value via CAN
+   //CANbus.write(curr_val); // Teensy CAN code
 
 /////////////////Speed////////////////////////
   //  velocity = mySensors.mspeed(enc1_count, enc_inc, enc1_avg, enc1_val, enc1_hold, count, wheel_diam, gear_rat, runtime, speedtimer);
