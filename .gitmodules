@@ -4,3 +4,6 @@
 [submodule "ESC Controller/libraries/mcp2515_lib"]
 	path = ESC Controller/libraries/mcp2515_lib
 	url = https://github.com/UAlberta-EcoCar/mcp2515_lib
+[submodule "ESC Controller/libraries/FlexCAN_Library"]
+	path = ESC Controller/libraries/FlexCAN_Library
+	url = https://github.com/teachop/FlexCAN_Library
