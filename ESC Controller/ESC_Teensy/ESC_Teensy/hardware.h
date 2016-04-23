@@ -6,7 +6,7 @@ const int CAN_INT = 9;
 const int BR = 9600; //set Baud Rate - 115200 doesn't work
 
 // Set Servo Pin
-const int servo_pin = 5; //Set servo pin
+const int servo_pin = 23; //Set servo pin
 
 // Board LED's
 const int led1 = A2; //set LED pins

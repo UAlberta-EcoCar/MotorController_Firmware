@@ -12,7 +12,7 @@ void Esc::begin() {
   _esc->write(180);
   delay(500);
   _esc->write(0);
-  delay(2000);
+  delay(5000);
   Serial.println("Electronic Speed Controller Initialization Successful");
 }
 
@@ -23,8 +23,8 @@ void Esc::write(uint16_t throttle) {
    *throttle_val = ((throttle - zero'ing_factor)*motor_maxvalue/calculated_value_to_set_max_desired_servo_value)
    */
 
-  throttle_val = ((throttle - 80)*150)/(744); //
-  _esc->write(throttle_val);
+  //throttle_val = ((940 - throttle)/(940-263))*180; //
+  _esc->write(50);
 
 }
 
