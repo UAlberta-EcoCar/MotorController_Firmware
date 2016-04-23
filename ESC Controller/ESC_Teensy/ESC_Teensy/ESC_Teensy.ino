@@ -82,9 +82,9 @@ void setup() {
 	  Serial.println(F("Hello Teensy 3.1 CAN Test."));*/
 	Serial.begin(BR); // Initialize Serial Output
 	Serial.println("Starting delay");
-	delay(10000);
-
-	pinMode(21,INPUT);
+	delay(20000);
+	//analogReadRes(1);
+	//pinMode(A11,INPUT);
 
 	//CANTransmitter.begin();
   //pinMode(led, OUTPUT);
@@ -108,12 +108,12 @@ void setup() {
 }
 
 void loop() {
-	rawIn = 10;// analogRead(21);
-	throttle_val = ((940 - rawIn)/(940-263))*180;
-	//Serial.println(throttle_val);
+	rawIn = analogRead(A11);
+	throttle_val = (rawIn * 180) /1023;
 	//Deploy
 	Serial.println(throttle_val);
 	myEsc.write(throttle_val);
+	delay(50);
 
 /* Uncomment me to send throttle values
 	Serial.print("Sending: ");

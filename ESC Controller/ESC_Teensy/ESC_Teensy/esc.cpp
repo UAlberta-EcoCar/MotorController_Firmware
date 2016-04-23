@@ -23,8 +23,8 @@ void Esc::write(uint16_t throttle) {
    *throttle_val = ((throttle - zero'ing_factor)*motor_maxvalue/calculated_value_to_set_max_desired_servo_value)
    */
 
-  //throttle_val = ((940 - throttle)/(940-263))*180; //
-  _esc->write(50);
+  //int throttle_val = ((940 - throttle)/(940-263))*180; //
+  _esc->write(throttle);
 
 }
 
