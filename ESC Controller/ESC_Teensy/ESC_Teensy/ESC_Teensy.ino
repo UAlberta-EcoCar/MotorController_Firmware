@@ -24,6 +24,8 @@ uint16_t brake = 0; // Analog value of brake pedal
 int throttle_val = 10;
 int rawIn = 10;
 int rollingValues[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+float minPedalVoltage = 135.0;
+int maxPedalVoltage = 1023;
 
 
 ///////Testing variables///////
@@ -82,7 +84,7 @@ void setup() {
 	  Serial.println(F("Hello Teensy 3.1 CAN Test."));*/
 	Serial.begin(BR); // Initialize Serial Output
 	Serial.println("Starting delay");
-	delay(20000);
+	delay(5000);
 	//analogReadRes(1);
 	//pinMode(A11,INPUT);
 
@@ -107,13 +109,33 @@ void setup() {
   pinMode(pinger_pin, INPUT); // Initialize Pinger Pin
 }
 
+//int test=0;
 void loop() {
+
 	rawIn = analogRead(A11);
-	throttle_val = (rawIn * 180) /1023;
+	//int throttleVoltage = ((rawIn * 33)) / 10230;
+	throttle_val = ((rawIn - minPedalVoltage) / (maxPedalVoltage - minPedalVoltage)) * 180;
 	//Deploy
-	Serial.println(throttle_val);
-	myEsc.write(throttle_val);
+	Serial.print("Raw In: ");
+	Serial.println(rawIn);
+	Serial.println("Throttle Value: ");
+	//Serial.println(throttle_val);
+	if (throttle_val <= 180 && throttle_val >= 0){
+		//Serial.println(throttle_val);
+		myEsc.write(throttle_val);
+	}
+	else if (throttle_val > 180){
+		//Serial.println(175);
+		//max
+		myEsc.write(180);
+	}
+	else{
+		//min
+		//Serial.println(0);
+		myEsc.write(0);
+	}
 	delay(50);
+	//test++;
 
 /* Uncomment me to send throttle values
 	Serial.print("Sending: ");
