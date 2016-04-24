@@ -12,6 +12,7 @@ public:
   void begin();
   void write(uint16_t throttle);
   void test(uint16_t test_speed);
+	void reattach(uint16_t newMax);
 
 private:
   Servo * _esc; // We created a variable that can store the address of the servo object (THE OBJECT IS NOT _ESC)

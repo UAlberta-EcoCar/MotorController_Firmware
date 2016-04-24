@@ -1,24 +1,26 @@
 #include "esc.h"
 
+uint16_t publicThrottle;
+
 void Esc::begin() {
   _esc = new Servo();
 
   //Initilize ESC
-	//Serial.println("Initializing ESC");
+	Serial.println("Initializing ESC");
 	_esc->attach(servo_pin); //ESC needs a low high low signal to turn on
-	//_esc->write(0);
-	//delay(1000);
-	//_esc->write(180);
-	//delay(500);
-	//_esc->write(0);
-	//delay(5000);
+	_esc->write(0);
+	delay(1000);
+	_esc->write(180);
+	delay(500);
+	_esc->write(0);
+	delay(5000);
 	Serial.println("Electronic Speed Controller Initialization Successful");
 }
 void Esc::beginTest() {
   _esc = new Servo();
 
   //Initilize ESC
-	//Serial.println("Initializing ESC");
+	Serial.println("Initializing ESC");
 	_esc->attach(servo_pin); //ESC needs a low high low signal to turn on
 	_esc->write(0);
 	delay(1000);
@@ -37,8 +39,15 @@ void Esc::write(uint16_t throttle) {
    */
 
   //int throttle_val = ((940 - throttle)/(940-263))*180; //
+	publicThrottle = throttle;
   _esc->write(throttle);
 
+}
+
+void Esc::reattach(uint16_t newMax){
+	_esc->detatch();
+	_esc->attach(servo_pin,544,newMax);
+	_esc->write(publicThrottle);
 }
 
 void Esc::test(uint16_t test_speed) {
