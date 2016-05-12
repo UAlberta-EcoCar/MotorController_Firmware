@@ -9,14 +9,14 @@ const int BR = 9600; //set Baud Rate - 115200 doesn't work
 const int servo_pin = 9; //Set servo pin
 
 // Board LED's
-const int led1 = A2; //set LED pins
-const int led2 = A1;
-const int led3 = A0;
+const int led1 = 10; //set LED pins
+const int led2 = 11;
+const int led3 = 12;
 
 // Encoder Control Pins
-const int enc1 = 2; //set hall effect 1 signal to arduino pin 2
-const int enc2 = 3; //set hall effect 2 signal to arduino pin 3
-const int enc3 = 4; //set hall effect 3 signal to arduino pin 4
+const int encoder_pin = 16;
+const int encoder_pin2 = 17;
+const int encoder_pin3 = 15;
 
 // Current Control Pin
 const int curr_sens_pin = A3; //set current sensor signal to arduino pin A3
