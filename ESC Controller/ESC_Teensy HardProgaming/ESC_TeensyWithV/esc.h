@@ -10,7 +10,6 @@ public:
 
   Esc() {};
   void begin();
-	void beginTest();
   void write(uint16_t throttle);
   void test(uint16_t test_speed);
 

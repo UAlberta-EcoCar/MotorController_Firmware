@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 volatile byte revolutions;
 
 unsigned int rpmilli;
@@ -16,9 +18,9 @@ void setup()
 {
  Serial.begin(9600);
  Serial.print("Serial Open");
+ Serial.print("Attach Interrupt");
  attachInterrupt(encoder_pin, rpm_fun, RISING);
  Serial.print("Fuck Yea");
-
 	pinMode(encoder_pin3, INPUT);
 	pinMode(encoder_pin2, INPUT);
  revolutions = 0;

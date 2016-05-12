@@ -137,16 +137,6 @@ void loop() {
 	}
 	delay(50);
 
-	/*
-	myEsc.write(1023);
-	delay(5000);
-	myEsc.reattach(3000);
-	delay(5000);
-	myEsc.reattach(2400);
-	while(true){
-
-	}
-	*/
 
 
 

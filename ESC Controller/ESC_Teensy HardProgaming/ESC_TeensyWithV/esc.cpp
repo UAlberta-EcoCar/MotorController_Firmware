@@ -4,21 +4,7 @@ void Esc::begin() {
   _esc = new Servo();
 
   //Initilize ESC
-	//Serial.println("Initializing ESC");
-	_esc->attach(servo_pin); //ESC needs a low high low signal to turn on
-	//_esc->write(0);
-	//delay(1000);
-	//_esc->write(180);
-	//delay(500);
-	//_esc->write(0);
-	//delay(5000);
-	Serial.println("Electronic Speed Controller Initialization Successful");
-}
-void Esc::beginTest() {
-  _esc = new Servo();
-
-  //Initilize ESC
-	//Serial.println("Initializing ESC");
+	Serial.println("Initializing ESC");
 	_esc->attach(servo_pin); //ESC needs a low high low signal to turn on
 	_esc->write(0);
 	delay(1000);
@@ -29,14 +15,13 @@ void Esc::beginTest() {
 	Serial.println("Electronic Speed Controller Initialization Successful");
 }
 
+
 void Esc::write(uint16_t throttle) {
   /*
    *Alice code: for use when the throttle or a potentiometer is attached
    *
    *throttle_val = ((throttle - zero'ing_factor)*motor_maxvalue/calculated_value_to_set_max_desired_servo_value)
    */
-
-  //int throttle_val = ((940 - throttle)/(940-263))*180; //
   _esc->write(throttle);
 
 }
