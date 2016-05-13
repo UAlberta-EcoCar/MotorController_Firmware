@@ -1,18 +1,22 @@
 #include "esc.h"
+#include "hardware.h"
 
 void Esc::begin() {
   _esc = new Servo();
 
   //Initilize ESC
-	Serial.println("Initializing ESC");
+	//Serial.println("Initializing ESC");
+  digitalWrite(led2,HIGH);
 	_esc->attach(servo_pin); //ESC needs a low high low signal to turn on
+	delay(500);
 	_esc->write(0);
-	delay(1000);
+	delay(500);
 	_esc->write(180);
 	delay(500);
 	_esc->write(0);
-	delay(5000);
-	Serial.println("Electronic Speed Controller Initialization Successful");
+	delay(1000);
+	//Serial.println("Electronic Speed Controller Initialization Successful");
+  digitalWrite(led2,LOW);
 }
 
 
@@ -26,23 +30,4 @@ void Esc::write(uint16_t throttle) {
 
 }
 
-void Esc::test(uint16_t test_speed) {
-  /*
-   *Testing code which runs the motor at speed (x) for 20 seconds and then turns off
-   */
 
-  if (Serial.available()){
-    test_speed = Serial.parseInt();
-  }
-
-  if (millis() < 20000) {
-    _esc->write(test_speed);
-    Serial.print("Test Speed: ");
-    Serial.println(test_speed);
-  }
-  else if (test_flag == false) {
-    _esc->write(0);
-    Serial.println("It's Ovaaaa");
-    test_flag = true;
-  }
-}
