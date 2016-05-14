@@ -37,7 +37,7 @@ void setup()
  pinMode(led1,OUTPUT);
  pinMode(led2,OUTPUT);
  pinMode(led3,OUTPUT);
-  
+
  Serial.begin(9600);
  delay(1000);
 
@@ -45,10 +45,10 @@ void setup()
  pinMode(encoder_pin3, INPUT);
  pinMode(encoder_pin2, INPUT);
  pinMode(encoder_pin, INPUT);
- attachInterrupt(encoder_pin2, rpm_fun, RISING);
+ attachInterrupt(encoder_pin, rpm_fun, RISING);
  pulses = 0;
- WHEELCIRC = 2 * PI * radius; 
- 
+ WHEELCIRC = 2 * PI * radius;
+
  myEsc.begin();
  delay(15000);
   timeold = millis();
@@ -56,19 +56,19 @@ void setup()
  myEsc.write(170);
 }
 
-void loop()
-{
-  myEsc.write(50);
- if (millis() - Serial_timer > 100)
- {
+void loop(){
+
+ if (millis() - Serial_timer > 100){
   Serial.flush();
   Serial.print((float)millis() / 1000);
   Serial.print(",");
   Serial.print(speed);
   Serial.print(",");
   Serial.println(total_pulses/7);
+	Serial.print(",");
+	Serial.print(digitalRead(encoder_pin));
  }
- if (pulses >= 100) {
+ if (pulses >= 100){
    //Update RPM every 20 counts, increase this for better RPM resolution,
    //decrease for faster update
 
@@ -78,20 +78,19 @@ void loop()
    speed = speed * 1000;
    speed = speed / (float)(millis() - timeold);
    speed = speed * 60 / 7;
-   
+
    timeold = millis();
-   pulses = 0; 
+   pulses = 0;
  }
- if(millis() - Dyno_timer > 50000)
- {
+ if(millis() - Dyno_timer > 50000){
   myEsc.write(0);
  }
- if(millis() - Dyno_timer > 80000)
- {
-  while(1)
-  {
+ else if(millis() - Dyno_timer > 80000){
+  while(1){
     myEsc.write(0);
   }
- }
 }
-
+else{
+		myEsc.write(170);
+}
+}
